@@ -1,7 +1,7 @@
 ## Project Overview
 
 The goal of this project is to generate activations from a Torch model. These
-activations will then be usable in (ZML)[https://github.com/zml/zml].
+activations will then be usable in [ZML](https://github.com/zml/zml).
 
 ## Installation
 
