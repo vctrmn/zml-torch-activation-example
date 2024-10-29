@@ -8,7 +8,7 @@ from .utils.zml import ActivationCollector
 logger = get_logger(__name__)
 
 
-MODEL_NAME: str = "meta-llama/Meta-Llama-3-8B"
+MODEL_NAME: str = "google-bert/bert-base-uncased"
 
 # CPU Instruction Set and dtype Support:
 #
@@ -40,12 +40,12 @@ def main() -> None:
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         logger.info(f"Loading model : `{MODEL_NAME}`")
-        text_generation_pipeline = pipeline(
-            "text-generation",
+        fill_mask_pipeline = pipeline(
+            "fill-mask",
             model=MODEL_NAME,
             device_map=device,
         )
-        model, tokenizer = text_generation_pipeline.model, text_generation_pipeline.tokenizer
+        model, tokenizer = fill_mask_pipeline.model, fill_mask_pipeline.tokenizer
         logger.info(
             f"Model loaded successfully {model.config.architectures} - `{model.config.torch_dtype}` - {tokenizer.model_max_length} max tokens"  # noqa: E501
         )
@@ -53,10 +53,10 @@ def main() -> None:
         # Wrap the pipeline, and extract activations.
         # Activations files can be huge for big models,
         # so let's stop collecting after 1000 layers.
-        zml_pipeline = ActivationCollector(text_generation_pipeline, max_layers=1000, stop_after_first_step=True)
+        zml_pipeline = ActivationCollector(fill_mask_pipeline, max_layers=1000, stop_after_first_step=True)
 
-        prompt = "Q: What is the largest animal?\nA:"
-        outputs, activations = zml_pipeline(prompt)
+        input_text = "Paris is the [MASK] of France."
+        outputs, activations = zml_pipeline(input_text)
         logger.info(f"ouputs : {outputs}")
 
         filename = MODEL_NAME.split("/")[-1] + ".activations.pt"
