@@ -50,18 +50,23 @@ def main() -> None:
             f"Model loaded successfully {model.config.architectures} - `{model.config.torch_dtype}` - {tokenizer.model_max_length} max tokens"  # noqa: E501
         )
 
+        # Generate text
+        prompt = "Q: What is the largest animal?\nA:"
+        outputs = text_generation_pipeline(prompt)
+        logger.info(f"ouputs : {outputs}")
+
         # Wrap the pipeline, and extract activations.
         # Activations files can be huge for big models,
         # so let's stop collecting after 1000 layers.
-        zml_pipeline = ActivationCollector(text_generation_pipeline, max_layers=1000, stop_after_first_step=True)
-
-        prompt = "Q: What is the largest animal?\nA:"
-        outputs, activations = zml_pipeline(prompt)
-        logger.info(f"ouputs : {outputs}")
-
-        filename = MODEL_NAME.split("/")[-1] + ".activations.pt"
-        torch.save(activations, filename)
-        logger.info(f"Saved {len(activations)} activations to {filename}")
+        # zml_pipeline = ActivationCollector(text_generation_pipeline, max_layers=1000, stop_after_first_step=True)
+        #
+        # prompt = "Q: What is the largest animal?\nA:"
+        # outputs, activations = zml_pipeline(prompt)
+        # logger.info(f"ouputs : {outputs}")
+        #
+        # filename = MODEL_NAME.split("/")[-1] + ".activations.pt"
+        # torch.save(activations, filename)
+        # logger.info(f"Saved {len(activations)} activations to {filename}")
 
         logger.info("End running main()")
     except Exception as exception:
