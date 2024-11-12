@@ -8,7 +8,7 @@ from .utils.zml import ActivationCollector
 logger = get_logger(__name__)
 
 
-MODEL_NAME: str = "meta-llama/Meta-Llama-3-8B"
+MODEL_NAME: str = "meta-llama/Llama-3.2-1B-Instruct"
 
 # CPU Instruction Set and dtype Support:
 #
@@ -43,6 +43,7 @@ def main() -> None:
         text_generation_pipeline = pipeline(
             "text-generation",
             model=MODEL_NAME,
+            torch_dtype=torch.bfloat16,
             device_map=device,
         )
         model, tokenizer = text_generation_pipeline.model, text_generation_pipeline.tokenizer
@@ -58,15 +59,15 @@ def main() -> None:
         # Wrap the pipeline, and extract activations.
         # Activations files can be huge for big models,
         # so let's stop collecting after 1000 layers.
-        # zml_pipeline = ActivationCollector(text_generation_pipeline, max_layers=1000, stop_after_first_step=True)
-        #
-        # prompt = "Q: What is the largest animal?\nA:"
-        # outputs, activations = zml_pipeline(prompt)
-        # logger.info(f"ouputs : {outputs}")
-        #
-        # filename = MODEL_NAME.split("/")[-1] + ".activations.pt"
-        # torch.save(activations, filename)
-        # logger.info(f"Saved {len(activations)} activations to {filename}")
+        zml_pipeline = ActivationCollector(text_generation_pipeline, max_layers=1000, stop_after_first_step=True)
+
+        prompt = "Q: What is the largest animal?\nA:"
+        outputs, activations = zml_pipeline(prompt)
+        logger.info(f"ouputs : {outputs}")
+
+        filename = MODEL_NAME.split("/")[-1] + ".activations.pt"
+        torch.save(activations, filename)
+        logger.info(f"Saved {len(activations)} activations to {filename}")
 
         logger.info("End running main()")
     except Exception as exception:
