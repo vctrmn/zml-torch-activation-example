@@ -179,3 +179,5 @@ old/
 
 .clipnoprod.env
 .clipprod.env
+
+*.activations.pt

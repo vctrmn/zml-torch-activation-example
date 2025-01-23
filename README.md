@@ -5,7 +5,7 @@ activations will then be usable in [ZML](https://github.com/zml/zml).
 
 ### Prerequisites
 
-- Python 3.12
+- Python 3.11
 
 ## Installation
 

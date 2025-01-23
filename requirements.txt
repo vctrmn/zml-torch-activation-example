@@ -1,4 +1,4 @@
 torch
-transformers
+git+https://github.com/huggingface/transformers.git#egg=transformers
 accelerate
 numpy==1.26.4
