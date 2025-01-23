@@ -44,7 +44,7 @@ pip install -r requirements.txt
 2. Run the activation script you want
 
 ```
-python -m src.llama_3_2_1b_instruct
+python -m src.modern_bert
 ```
 
 ## License
