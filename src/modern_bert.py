@@ -8,38 +8,17 @@ from .utils.zml import ActivationCollector
 logger = get_logger(__name__)
 
 
-MODEL_NAME: str = "google-bert/bert-base-uncased"
-
-# CPU Instruction Set and dtype Support:
-#
-# 1. SSE2 (Early 2000s, Intel Pentium 4, AMD Athlon 64):
-#    - Supports: float32, float64
-#
-# 2. AVX (2011, Intel Sandy Bridge, AMD Bulldozer):
-#    - Supports: float32, float64
-#
-# 3. AVX2 (2013, Intel Haswell, AMD Excavator):
-#    - Supports: float32, float64, int8
-#    - AVX2 is optimized for both integer and floating-point operations,
-#      but it does NOT support bfloat16.
-#
-# 4. AVX512 (2017, Intel Skylake-X, Xeon processors):
-#    - Supports: float32, float64, int8, bfloat16 (with AVX512 BF16 instructions)
-#    - Provides significant parallel computing performance gains.
-#
-# 5. AVX512 BF16 (2020, Intel Cooper Lake, Ice Lake):
-#    - Supports: bfloat16 (for mixed-precision AI workloads)
-#    - Enables faster training and inference for AI models.
+MODEL_NAME: str = "answerdotai/ModernBERT-base"
 
 
 def main() -> None:
     try:
         logger.info("Start running main()")
-        logger.info(f"Is CUDA available ? `{torch.cuda.is_available()}`")
         logger.info(f"CPU capability : `{torch.backends.cpu.get_cpu_capability()}`")
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
         logger.info(f"Loading model : `{MODEL_NAME}`")
+
         fill_mask_pipeline = pipeline(
             "fill-mask",
             model=MODEL_NAME,
@@ -49,6 +28,10 @@ def main() -> None:
         logger.info(
             f"Model loaded successfully {model.config.architectures} - `{model.config.torch_dtype}` - {tokenizer.model_max_length} max tokens"  # noqa: E501
         )
+
+        # input_text = "Paris is the [MASK] of France."
+        # outputs = fill_mask_pipeline(input_text)
+        # logger.info(f"ouputs : {outputs}")
 
         # Wrap the pipeline, and extract activations.
         # Activations files can be huge for big models,
